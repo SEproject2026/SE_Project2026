@@ -6,16 +6,20 @@ import java.time.LocalDateTime;
  * Represents an appointment slot in the system.
  */
 public class Appointment {
+    private int id;
     private LocalDateTime dateTime;
-    private String type; // Sprint 5 requirement
+    private String type; 
     private boolean isBooked;
 
-    public Appointment(LocalDateTime dateTime) {
+    // الـ Constructor الجديد ليتناسب مع الخدمة
+    public Appointment(int id, LocalDateTime dateTime, boolean isBooked) {
+        this.id = id;
         this.dateTime = dateTime;
-        this.isBooked = false;
+        this.isBooked = isBooked;
     }
 
     // Getters and Setters
+    public int getId() { return id; }
     public LocalDateTime getDateTime() { return dateTime; }
     public boolean isBooked() { return isBooked; }
     public void setBooked(boolean booked) { isBooked = booked; }
