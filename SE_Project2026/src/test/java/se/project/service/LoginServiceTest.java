@@ -13,34 +13,28 @@ class LoginServiceTest {
 
     @BeforeEach
     void setUp() {
-        // إنشاء نسخة جديدة من الخدمة قبل كل تيسيت
         loginService = new LoginService();
     }
 
     @Test
     void testAdminLoginSuccess() {
-        // فحص دخول ناجح ببيانات صحيحة
         boolean result = loginService.login("admin", "admin123");
-        assertTrue(result, "البيانات صحيحة، يجب أن ينجح الدخول");
+        assertTrue(result, "The data is correct; the login should succeed");
     }
 
     @Test
     void testAdminLoginFailure() {
-        // فحص فشل الدخول بكلمة سر خاطئة
         boolean result = loginService.login("admin", "wrongPass");
-        assertFalse(result, "كلمة السر خاطئة، يجب أن يفشل الدخول");
+        assertFalse(result, "The password is incorrect; the login should fail");
     }
     
     @Test
     void testAdminLogout() {
-        // 1. تسجيل الدخول أولاً
         loginService.login("admin", "admin123");
-        assertTrue(loginService.isLoggedIn(), "يجب أن يكون المسؤول مسجلاً للدخول الآن");
+        assertTrue(loginService.isLoggedIn(), "The admin must be logged in now");
 
-        // 2. تنفيذ تسجيل الخروج (US1.2)
         loginService.logout();
 
-        // 3. التحقق من إغلاق الجلسة (Acceptance Criteria)
-        assertFalse(loginService.isLoggedIn(), "بعد تسجيل الخروج، يجب أن تكون الحالة false");
+        assertFalse(loginService.isLoggedIn(), "After logging out, the status must be false");
     }
 }

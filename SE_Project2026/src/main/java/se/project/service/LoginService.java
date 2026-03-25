@@ -6,8 +6,7 @@ import java.util.List;
 
 public class LoginService {
     private List<User> users;
-    private boolean isLoggedIn = false; // تتبع حالة الجلسة
-
+    private boolean isLoggedIn = false; 
     public LoginService() {
         this.users = new ArrayList<>();
         users.add(new User("admin", "admin123", true));
@@ -16,7 +15,7 @@ public class LoginService {
     public boolean login(String username, String password) {
         for (User user : users) {
             if (user.getUsername().equals(username) && user.getPassword().equals(password) && user.isAdmin()) {
-                isLoggedIn = true; // تفعيل الجلسة
+                isLoggedIn = true; 
                 return true;
             }
         }
@@ -28,7 +27,7 @@ public class LoginService {
      * Closes the session by setting isLoggedIn to false.
      */
     public void logout() {
-        isLoggedIn = false; // إغلاق الجلسة
+        isLoggedIn = false;
     }
 
     /**

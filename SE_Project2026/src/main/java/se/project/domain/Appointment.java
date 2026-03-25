@@ -1,26 +1,33 @@
 package se.project.domain;
-
 import java.time.LocalDateTime;
 
-/**
- * Represents an appointment slot in the system.
- */
 public class Appointment {
     private int id;
-    private LocalDateTime dateTime;
-    private String type; 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private int maxParticipants;
+    private int currentParticipants; // تأكدي من وجود هذا المتغير
     private boolean isBooked;
 
-    // الـ Constructor الجديد ليتناسب مع الخدمة
-    public Appointment(int id, LocalDateTime dateTime, boolean isBooked) {
+    // الـ Constructor يجب أن يكون بهذا الشكل ليستقبل الـ 5 قيم
+    public Appointment(int id, LocalDateTime startTime, LocalDateTime endTime, int maxParticipants, boolean isBooked) {
         this.id = id;
-        this.dateTime = dateTime;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.maxParticipants = maxParticipants;
         this.isBooked = isBooked;
+        this.currentParticipants = 0; // يبدأ دائماً بصفر
     }
 
-    // Getters and Setters
+    // Getters - تأكدي من وجود هذه الميثودز تحديداً
     public int getId() { return id; }
-    public LocalDateTime getDateTime() { return dateTime; }
+    public LocalDateTime getStartTime() { return startTime; }
+    public LocalDateTime getEndTime() { return endTime; }
+    public int getMaxParticipants() { return maxParticipants; }
+    public int getCurrentParticipants() { return currentParticipants; }
     public boolean isBooked() { return isBooked; }
+
+    // Setters & Methods
     public void setBooked(boolean booked) { isBooked = booked; }
+    public void addParticipant() { this.currentParticipants++; }
 }

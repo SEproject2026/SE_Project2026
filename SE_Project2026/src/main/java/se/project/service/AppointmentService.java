@@ -5,21 +5,87 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import se.project.notification.NotificationService;
 
 public class AppointmentService {
     private List<Appointment> appointments;
+    private NotificationService notificationService;
 
-    public AppointmentService() {
+ // الـ Constructor المحدث الذي يستقبل خدمة التنبيهات
+    public AppointmentService(NotificationService notificationService) {
+        this.notificationService = notificationService; // ربط الخدمة الوهمية أو الحقيقية
         this.appointments = new ArrayList<>();
-        // إضافة مواعيد باستخدام LocalDateTime.of(year, month, day, hour, minute)
-        appointments.add(new Appointment(1, LocalDateTime.of(2026, 4, 1, 10, 0), false));
-        appointments.add(new Appointment(2, LocalDateTime.of(2026, 4, 1, 11, 0), true));
-        appointments.add(new Appointment(3, LocalDateTime.of(2026, 4, 2, 9, 0), false));
+        
+        // المواعيد (تأكدي من إضافة رقم السعة 5 مثلاً في نهاية كل موعد ليتوافق مع US2.3)
+        appointments.add(new Appointment(1, 
+            LocalDateTime.of(2026, 4, 1, 10, 0), 
+            LocalDateTime.of(2026, 4, 1, 11, 0), 5, false));
+
+        appointments.add(new Appointment(2, 
+            LocalDateTime.of(2026, 4, 1, 11, 0), 
+            LocalDateTime.of(2026, 4, 1, 12, 0), 5, true));
+
+        appointments.add(new Appointment(3, 
+            LocalDateTime.of(2026, 4, 2, 9, 0), 
+            LocalDateTime.of(2026, 4, 2, 10, 0), 5, false));
+    }
+
+    // إضافة ميثود إرسال التذكير (US3.1) في نهاية الكلاس
+    public void sendAppointmentReminder(int appointmentId) {
+        String message = "Reminder: Your appointment with ID " + appointmentId + " is coming up!";
+        notificationService.sendReminder(message);
     }
 
     public List<Appointment> getAvailableSlots() {
         return appointments.stream()
                 .filter(app -> !app.isBooked())
                 .collect(Collectors.toList());
+    }
+    /**
+     * US2.1 - Book an appointment
+     * Finds an appointment by ID and sets its status to booked.
+     * @param appointmentId The ID of the appointment to book.
+     * @return true if booking was successful, false if not found or already booked.
+     */
+    public boolean bookAppointment(int appointmentId) {
+        for (Appointment app : appointments) {
+            if (app.getId() == appointmentId && !app.isBooked()) {
+                app.setBooked(true); 
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+    private static final long MAX_DURATION_MINUTES = 120;
+
+    /**
+     * US2.2 - Enforce visit duration rule
+     * Checks if the appointment duration is within the allowed limit.
+     */
+    public boolean isValidDuration(Appointment app) {
+        long duration = java.time.Duration.between(app.getStartTime(), app.getEndTime()).toMinutes();
+        
+        return duration > 0 && duration <= MAX_DURATION_MINUTES;
+    }
+    /**
+     * US2.3 - Enforce participant limit
+     * Checks if the appointment has reached its maximum capacity.
+     */
+    public boolean hasCapacity(Appointment app) {
+        return app.getCurrentParticipants() < app.getMaxParticipants();
+    }
+
+    public boolean registerParticipant(int appointmentId) {
+        for (Appointment app : appointments) {
+            if (app.getId() == appointmentId) {
+                if (hasCapacity(app)) {
+                    app.addParticipant();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
