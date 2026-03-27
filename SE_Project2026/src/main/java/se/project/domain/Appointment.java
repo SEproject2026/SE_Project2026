@@ -6,20 +6,18 @@ public class Appointment {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private int maxParticipants;
-    private int currentParticipants; // تأكدي من وجود هذا المتغير
+    private int currentParticipants; 
     private boolean isBooked;
 
-    // الـ Constructor يجب أن يكون بهذا الشكل ليستقبل الـ 5 قيم
     public Appointment(int id, LocalDateTime startTime, LocalDateTime endTime, int maxParticipants, boolean isBooked) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.maxParticipants = maxParticipants;
         this.isBooked = isBooked;
-        this.currentParticipants = 0; // يبدأ دائماً بصفر
+        this.currentParticipants = 0; 
     }
 
-    // Getters - تأكدي من وجود هذه الميثودز تحديداً
     public int getId() { return id; }
     public LocalDateTime getStartTime() { return startTime; }
     public LocalDateTime getEndTime() { return endTime; }
@@ -27,7 +25,9 @@ public class Appointment {
     public int getCurrentParticipants() { return currentParticipants; }
     public boolean isBooked() { return isBooked; }
 
-    // Setters & Methods
     public void setBooked(boolean booked) { isBooked = booked; }
     public void addParticipant() { this.currentParticipants++; }
+    
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
 }

@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import se.project.notification.NotificationService;
+import se.project.domain.User;
 
 public class AppointmentService {
     private List<Appointment> appointments;
     private NotificationService notificationService;
 
- // الـ Constructor المحدث الذي يستقبل خدمة التنبيهات
     public AppointmentService(NotificationService notificationService) {
-        this.notificationService = notificationService; // ربط الخدمة الوهمية أو الحقيقية
+        this.notificationService = notificationService; 
         this.appointments = new ArrayList<>();
         
-        // المواعيد (تأكدي من إضافة رقم السعة 5 مثلاً في نهاية كل موعد ليتوافق مع US2.3)
+        
         appointments.add(new Appointment(1, 
             LocalDateTime.of(2026, 4, 1, 10, 0), 
             LocalDateTime.of(2026, 4, 1, 11, 0), 5, false));
@@ -30,8 +30,7 @@ public class AppointmentService {
             LocalDateTime.of(2026, 4, 2, 10, 0), 5, false));
     }
 
-    // إضافة ميثود إرسال التذكير (US3.1) في نهاية الكلاس
-    public void sendAppointmentReminder(int appointmentId) {
+        public void sendAppointmentReminder(int appointmentId) {
         String message = "Reminder: Your appointment with ID " + appointmentId + " is coming up!";
         notificationService.sendReminder(message);
     }
@@ -88,4 +87,54 @@ public class AppointmentService {
         }
         return false;
     }
+    
+    
+    /**
+     * US4.1 - Cancel an appointment
+     * Only future appointments can be canceled. Slot becomes available again.
+     */
+    public boolean cancelAppointment(int appointmentId) {
+        for (Appointment app : appointments) {
+            if (app.getId() == appointmentId && app.isBooked()) {
+                if (app.getStartTime().isAfter(LocalDateTime.now())) {
+                    app.setBooked(false);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * US4.1 - Modify appointment time
+     * Changes the time of an existing booking if the new time is valid.
+     */
+    public boolean modifyAppointment(int appointmentId, LocalDateTime newStart, LocalDateTime newEnd) {
+        for (Appointment app : appointments) {
+            if (app.getId() == appointmentId && app.isBooked()) {
+                if (app.getStartTime().isAfter(LocalDateTime.now())) {
+                 
+                    return true; 
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * US4.2 - Admin Cancel Appointment
+     * Allows only administrators to cancel any booking.
+     */
+    public boolean adminCancelAppointment(int appointmentId, User user) {
+        if (user != null && user.isAdmin()) {
+            for (Appointment app : appointments) {
+                if (app.getId() == appointmentId) {
+                    app.setBooked(false); 
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
 }

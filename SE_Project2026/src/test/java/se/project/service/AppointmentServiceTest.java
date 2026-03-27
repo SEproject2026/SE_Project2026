@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import se.project.domain.Appointment;
 import se.project.notification.MockNotificationService;
 import se.project.notification.NotificationService;
+import se.project.domain.User;
 
 import java.util.List;
 import java.time.LocalDateTime;
@@ -17,11 +18,8 @@ class AppointmentServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 1. إنشاء النسخة الوهمية من خدمة التنبيهات
         mockNotification = new MockNotificationService();
         
-        // 2. تمرير الـ Mock للخدمة (Dependency Injection)
-        // إذا استمر الخطأ هنا، تأكدي أنكِ حفظتِ ملف AppointmentService.java بعد تعديل الـ Constructor
         appointmentService = new AppointmentService(mockNotification);
     }
 
@@ -54,7 +52,6 @@ class AppointmentServiceTest {
     void testDurationLimit() {
         LocalDateTime start = LocalDateTime.of(2026, 5, 1, 10, 0);
         LocalDateTime end = LocalDateTime.of(2026, 5, 1, 13, 0);
-        // تأكدي أن كلاس Appointment يدعم (id, start, end, maxParticipants, isBooked)
         Appointment longApp = new Appointment(99, start, end, 5, false);
         
         assertFalse(appointmentService.isValidDuration(longApp), "The check must fail because the duration exceeds two hours");
@@ -64,7 +61,6 @@ class AppointmentServiceTest {
     void testParticipantLimitSuccess() {
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = start.plusHours(1);
-        // إنشاء موعد بسعة 1 فقط للاختبار
         Appointment limitedApp = new Appointment(20, start, end, 1, false);
         
         assertTrue(appointmentService.hasCapacity(limitedApp), "There must be availability at the beginning");
@@ -80,6 +76,39 @@ class AppointmentServiceTest {
         appointmentService.sendAppointmentReminder(appId);
         
         String expectedMessage = "Reminder: Your appointment with ID 1 is coming up!";
-        assertTrue(mockNotification.isMessageSent(expectedMessage), "يجب أن يسجل الـ Mock إرسال التذكير بنجاح");
+        assertTrue(mockNotification.isMessageSent(expectedMessage), "The mock should record that the reminder was sent successfully");
     }
+    
+    @Test
+    void testCancelAppointment() {
+        appointmentService.bookAppointment(1);
+        
+        boolean result = appointmentService.cancelAppointment(1);
+        
+        assertTrue(result, "Cancellation should succeed for a booked future appointment");        
+        List<Appointment> available = appointmentService.getAvailableSlots();
+        boolean isFound = available.stream().anyMatch(a -> a.getId() == 1);
+        assertTrue(isFound, "The appointment should be available again after cancellation");    }
+    
+    @Test
+    void testAdminCancelSuccess() {
+        User admin = new User("admin", "123", true);
+        
+        appointmentService.bookAppointment(1);
+        
+        boolean result = appointmentService.adminCancelAppointment(1, admin);
+        
+        assertTrue(result,"Administrator must be able to cancel the booking");
+    }
+
+    @Test
+    void testUserCannotAdminCancel() {
+        User regularUser = new User("user", "123", false);
+        
+        appointmentService.bookAppointment(1);
+        
+        boolean result = appointmentService.adminCancelAppointment(1, regularUser);
+        
+        assertFalse(result, "A regular user should not have administrator cancellation privileges");   
+        }
 }
