@@ -19,8 +19,10 @@ class AppointmentServiceTest {
     @BeforeEach
     void setUp() {
         mockNotification = new MockNotificationService();
-        
-        appointmentService = new AppointmentService(mockNotification);
+        // الكونستركتور الآن لا يأخذ باراميترات
+        appointmentService = new AppointmentService(); 
+        // نضيف الموك كمراقب
+        appointmentService.addObserver(mockNotification); 
     }
 
     @Test
@@ -154,4 +156,5 @@ class AppointmentServiceTest {
         assertTrue(appointmentService.isValidDurationPerType(virtualApp), 
             "Virtual appointments should be valid within 60 minutes.");
     }
+    
 }
