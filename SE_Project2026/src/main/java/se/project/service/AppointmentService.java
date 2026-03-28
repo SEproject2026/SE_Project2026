@@ -12,24 +12,24 @@ public class AppointmentService {
     private List<Appointment> appointments;
     private NotificationService notificationService;
 
+ // الـ Constructor المحدث لدعم أنواع المواعيد (US5.1)
     public AppointmentService(NotificationService notificationService) {
-        this.notificationService = notificationService; 
+        this.notificationService = notificationService;
         this.appointments = new ArrayList<>();
         
-        
+        // المواعيد مع إضافة النوع في النهاية (Urgent, Virtual, Follow-up, etc.)
         appointments.add(new Appointment(1, 
             LocalDateTime.of(2026, 4, 1, 10, 0), 
-            LocalDateTime.of(2026, 4, 1, 11, 0), 5, false));
+            LocalDateTime.of(2026, 4, 1, 11, 0), 5, false, "Urgent"));
 
         appointments.add(new Appointment(2, 
             LocalDateTime.of(2026, 4, 1, 11, 0), 
-            LocalDateTime.of(2026, 4, 1, 12, 0), 5, true));
+            LocalDateTime.of(2026, 4, 1, 12, 0), 5, true, "Virtual"));
 
         appointments.add(new Appointment(3, 
             LocalDateTime.of(2026, 4, 2, 9, 0), 
-            LocalDateTime.of(2026, 4, 2, 10, 0), 5, false));
+            LocalDateTime.of(2026, 4, 2, 10, 0), 5, false, "Follow-up"));
     }
-
         public void sendAppointmentReminder(int appointmentId) {
         String message = "Reminder: Your appointment with ID " + appointmentId + " is coming up!";
         notificationService.sendReminder(message);
@@ -137,4 +137,27 @@ public class AppointmentService {
         return false;
     }
     
+    public List<Appointment> getAppointmentsByType(String type) {
+        return appointments.stream()
+                .filter(app -> app.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * US5.2 - Apply different rules per type
+     * Checks if the duration is valid based on the appointment type.
+     */
+    public boolean isValidDurationPerType(Appointment app) {
+        long duration = java.time.Duration.between(app.getStartTime(), app.getEndTime()).toMinutes();
+        
+        // تطبيق القواعد بناءً على النوع
+        switch (app.getType().toLowerCase()) {
+            case "urgent":
+                return duration > 0 && duration <= 30; // الطارئ حد أقصى 30 دقيقة
+            case "virtual":
+                return duration > 0 && duration <= 60; // الافتراضي حد أقصى ساعة
+            default:
+                return duration > 0 && duration <= 120; // الباقي ساعتين
+        }
+    }
 }

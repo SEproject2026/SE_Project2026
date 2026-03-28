@@ -52,7 +52,8 @@ class AppointmentServiceTest {
     void testDurationLimit() {
         LocalDateTime start = LocalDateTime.of(2026, 5, 1, 10, 0);
         LocalDateTime end = LocalDateTime.of(2026, 5, 1, 13, 0);
-        Appointment longApp = new Appointment(99, start, end, 5, false);
+        // أضفنا "Urgent" كباراميتر سادس هنا
+        Appointment longApp = new Appointment(99, start, end, 5, false, "Urgent");
         
         assertFalse(appointmentService.isValidDuration(longApp), "The check must fail because the duration exceeds two hours");
     }
@@ -61,7 +62,8 @@ class AppointmentServiceTest {
     void testParticipantLimitSuccess() {
         LocalDateTime start = LocalDateTime.now();
         LocalDateTime end = start.plusHours(1);
-        Appointment limitedApp = new Appointment(20, start, end, 1, false);
+        // أضفنا "General" كباراميتر سادس هنا
+        Appointment limitedApp = new Appointment(20, start, end, 1, false, "General");
         
         assertTrue(appointmentService.hasCapacity(limitedApp), "There must be availability at the beginning");
         
@@ -111,4 +113,45 @@ class AppointmentServiceTest {
         
         assertFalse(result, "A regular user should not have administrator cancellation privileges");   
         }
+    
+    
+    @Test
+    void testAppointmentTypeStorage() {
+        // إنشاء موعد من نوع "Virtual"
+        Appointment virtualApp = new Appointment(50, LocalDateTime.now(), LocalDateTime.now().plusHours(1), 1, false, "Virtual");
+        
+        // التأكد من تخزين النوع بشكل صحيح
+        assertEquals("Virtual", virtualApp.getType(), "The appointment type should be stored correctly.");
+    }
+    
+    @Test
+    void testFilterAppointmentsByType() {
+        // البحث عن المواعيد الطارئة
+        List<Appointment> urgentApps = appointmentService.getAppointmentsByType("Urgent");
+        
+        assertFalse(urgentApps.isEmpty(), "System should find at least one urgent appointment.");
+        assertEquals("Urgent", urgentApps.get(0).getType(), "The retrieved appointment type must match the filter.");
+    }
+    
+    @Test
+    void testUrgentAppointmentDurationRule() {
+        // إنشاء موعد طارئ مدته 45 دقيقة (يجب أن يفشل لأن الحد 30)
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusMinutes(45);
+        Appointment urgentApp = new Appointment(101, start, end, 1, false, "Urgent");
+        
+        assertFalse(appointmentService.isValidDurationPerType(urgentApp), 
+            "Urgent appointments should not exceed 30 minutes.");
+    }
+
+    @Test
+    void testVirtualAppointmentDurationRule() {
+        // إنشاء موعد افتراضي مدته 50 دقيقة (يجب أن ينجح لأن الحد 60)
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = start.plusMinutes(50);
+        Appointment virtualApp = new Appointment(102, start, end, 1, false, "Virtual");
+        
+        assertTrue(appointmentService.isValidDurationPerType(virtualApp), 
+            "Virtual appointments should be valid within 60 minutes.");
+    }
 }

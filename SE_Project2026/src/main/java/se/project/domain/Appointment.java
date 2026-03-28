@@ -8,14 +8,16 @@ public class Appointment {
     private int maxParticipants;
     private int currentParticipants; 
     private boolean isBooked;
+    private String type;
 
-    public Appointment(int id, LocalDateTime startTime, LocalDateTime endTime, int maxParticipants, boolean isBooked) {
+    public Appointment(int id, LocalDateTime startTime, LocalDateTime endTime, int maxParticipants, boolean isBooked, String type) {
         this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.maxParticipants = maxParticipants;
         this.isBooked = isBooked;
-        this.currentParticipants = 0; 
+        this.type = type; 
+        this.currentParticipants = 0;
     }
 
     public int getId() { return id; }
@@ -24,6 +26,7 @@ public class Appointment {
     public int getMaxParticipants() { return maxParticipants; }
     public int getCurrentParticipants() { return currentParticipants; }
     public boolean isBooked() { return isBooked; }
+    public String getType() { return type; }
 
     public void setBooked(boolean booked) { isBooked = booked; }
     public void addParticipant() { this.currentParticipants++; }
