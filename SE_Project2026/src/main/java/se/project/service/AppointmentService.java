@@ -63,8 +63,10 @@ public class AppointmentService {
      * @param app The appointment object to be added.
      */
     public void addAppointment(Appointment app) {
-        this.appointments.add(app);
-        System.out.println("New appointment added successfully.");
+        if (app != null) {
+            this.appointments.add(app);
+            System.out.println("New appointment added successfully.");
+        }
     }
 
     /**
@@ -80,6 +82,7 @@ public class AppointmentService {
      * @param message The notification message content to be sent.
      */
     private void notifyAllObservers(String message) {
+        if (observers == null || observers.isEmpty()) return; 
         for (NotificationService obs : observers) {
             obs.update(message);
         }
@@ -127,9 +130,13 @@ public class AppointmentService {
      * @return A list of available Appointment objects.
      */
     public List<Appointment> getAvailableSlots() {
-        return appointments.stream()
-                .filter(app -> !app.isBooked())
-                .collect(Collectors.toList());
+        List<Appointment> available = new ArrayList<>();
+        for (Appointment app : appointments) {
+            if (!app.isBooked()) {
+                available.add(app);
+            }
+        }
+        return available;
     }
 
     /**
@@ -168,12 +175,11 @@ public class AppointmentService {
      */
     public boolean adminCancelAppointment(int appointmentId, User user) {
         if (user != null && user.isAdmin()) {
-            for (Appointment app : appointments) {
-                if (app.getId() == appointmentId) {
-                    app.setBooked(false);
-                    notifyAllObservers("Admin has canceled appointment " + appointmentId);
-                    return true;
-                }
+            boolean removed = appointments.removeIf(app -> app.getId() == appointmentId);
+            
+            if (removed) {
+                notifyAllObservers("Admin has canceled (deleted) appointment " + appointmentId);
+                return true;
             }
         }
         return false;
@@ -201,6 +207,10 @@ public class AppointmentService {
      * @return true if duration is valid (1-120 minutes); false otherwise.
      */
     public boolean isValidDuration(Appointment app) {
+        if (app == null || app.getStartTime() == null || app.getEndTime() == null) {
+            return false;
+        }
+        
         long duration = java.time.Duration.between(app.getStartTime(), app.getEndTime()).toMinutes();
         return duration > 0 && duration <= 120;
     }

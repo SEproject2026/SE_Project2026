@@ -30,7 +30,7 @@ public class MainMenu {
     public void start() {
         boolean keepRunningSystem = true;
 
-        while (keepRunningSystem) { // Loop خارجية لضمان البقاء في نظام تسجيل الدخول
+        while (keepRunningSystem) { 
             System.out.println("\n=== SYSTEM GATEWAY ===");
             System.out.println("--- Login System (Type 'shutdown' to close program) ---");
             System.out.flush();
@@ -64,7 +64,7 @@ public class MainMenu {
             System.out.println("\nLogin successful! Welcome, " + username);
 
             int choice = -1;
-            while (choice != 0) { // Loop داخلية للمنيو الخاصة باليوزر الحالي
+            while (choice != 0) {
                 displayMenu();
                 System.out.print("Enter choice: ");
                 System.out.flush();
@@ -89,7 +89,6 @@ public class MainMenu {
                     choice = -1;
                 }
             }
-            // بمجرد اختيار 0، تنتهي الـ loop الداخلية ونعود لبداية الـ keepRunningSystem
         }
         System.out.println("System Shutdown. Goodbye!");
     }
@@ -107,10 +106,9 @@ public class MainMenu {
         }
         System.out.println("4. Filter Appointments by Type");
         System.out.println("0. Exit");
-        // تم حذف سطر "Enter choice" من هنا لأنه موجود في ميثود start
     }
 
-    private void handleChoice(int choice) {
+    public void handleChoice(int choice) {
         if (currentUser.isAdmin()) {
             switch (choice) {
                 case 1: showAllSlots(); break;
@@ -130,13 +128,12 @@ public class MainMenu {
         }
     }
 
-    // --- ميثودات مساعدة لتجنب أخطاء الـ Scanner داخل الميثودات الفرعية ---
-    private String safeRead() {
+    protected String safeRead() {
         if (scanner.hasNextLine()) return scanner.nextLine().trim();
         return "";
     }
 
-    private void showAllSlots() {
+    protected void showAllSlots() {
         List<Appointment> all = appointmentService.getAppointmentsByType(""); 
         System.out.println("\n--- All System Appointments ---");
         for (Appointment app : all) {
@@ -144,7 +141,7 @@ public class MainMenu {
         }
     }
 
-    private void addAppointment() {
+    protected void addAppointment() {
         try {
             System.out.print("Enter ID: ");
             int id = Integer.parseInt(safeRead());
@@ -152,14 +149,15 @@ public class MainMenu {
             String type = safeRead();
             
             Appointment newApp = new Appointment(id, LocalDateTime.now().plusDays(1), 
-                                                LocalDateTime.now().plusDays(1).plusHours(1), 5, false, type);
+            LocalDateTime.now().plusDays(1).plusHours(1), 5, false, type);
             appointmentService.addAppointment(newApp); 
+            appointmentService.sendAppointmentReminder(id);
         } catch (Exception e) {
             System.out.println("Error adding appointment. Check your input.");
         }
     }
 
-    private void adminCancel() {
+    protected void adminCancel() {
         try {
             System.out.print("Enter ID to Force Cancel: ");
             int id = Integer.parseInt(safeRead());
@@ -173,7 +171,7 @@ public class MainMenu {
         }
     }
 
-    private void showAvailableSlots() {
+    protected void showAvailableSlots() {
         List<Appointment> slots = appointmentService.getAvailableSlots();
         System.out.println("\n--- Available Slots ---");
         if (slots.isEmpty()) System.out.println("No available slots.");
@@ -182,7 +180,7 @@ public class MainMenu {
         }
     }
 
-    private void bookSlot() {
+    protected void bookSlot() {
         try {
             System.out.print("Enter ID to book: ");
             int id = Integer.parseInt(safeRead());
@@ -196,7 +194,7 @@ public class MainMenu {
         }
     }
 
-    private void cancelSlot() {
+    protected void cancelSlot() {
         try {
             System.out.print("Enter ID to cancel: ");
             int id = Integer.parseInt(safeRead());
@@ -210,7 +208,7 @@ public class MainMenu {
         }
     }
 
-    private void filterByType() {
+    protected void filterByType() {
         System.out.print("Enter Type: ");
         String type = safeRead();
         List<Appointment> filtered = appointmentService.getAppointmentsByType(type);
@@ -222,6 +220,10 @@ public class MainMenu {
 
     public static void main(String[] args) {
         new MainMenu().start();
+    }
+    
+    public void setTestUser(User user) {
+        this.currentUser = user;
     }
     
 }
