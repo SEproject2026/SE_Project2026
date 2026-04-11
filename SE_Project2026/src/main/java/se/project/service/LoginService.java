@@ -22,18 +22,12 @@ public class LoginService {
         return false;
     }
 
-    /**
-     * US1.2 - Administrator logout
-     * Closes the session by setting isLoggedIn to false.
-     */
+    
     public void logout() {
         isLoggedIn = false;
     }
 
-    /**
-     * Helper method to check if admin is still logged in.
-     * @return true if logged in, false otherwise.
-     */
+    
     public boolean isLoggedIn() {
         return isLoggedIn;
     }

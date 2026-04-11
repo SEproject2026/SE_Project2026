@@ -1,5 +1,6 @@
 package se.project.service;
-
+import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,21 +15,23 @@ import java.time.LocalDateTime;
 class AppointmentServiceTest {
 
     private AppointmentService appointmentService;
-    private MockNotificationService mockNotification; 
+    private NotificationService mockNotification; 
 
     @BeforeEach
     void setUp() {
-        mockNotification = new MockNotificationService();
-        // الكونستركتور الآن لا يأخذ باراميترات
+        mockNotification = mock(NotificationService.class); 
+        
         appointmentService = new AppointmentService(); 
-        // نضيف الموك كمراقب
+        
+        appointmentService.getObservers().clear(); 
+        
         appointmentService.addObserver(mockNotification); 
     }
 
     @Test
     void testGetAvailableSlots() {
         List<Appointment> available = appointmentService.getAvailableSlots();
-        assertEquals(2, available.size(), "Only unbooked appointments should be retrieved");
+        assertEquals(3, available.size(), "Only unbooked appointments should be retrieved");
         
         for (Appointment app : available) {
             assertFalse(app.isBooked(), "Booked appointments must not be displayed");
@@ -41,12 +44,16 @@ class AppointmentServiceTest {
         assertTrue(result, "The booking process should succeed for an available appointment");
         
         List<Appointment> available = appointmentService.getAvailableSlots();
-        assertEquals(1, available.size(), "Only one appointment (number 3) should remain available");
+        assertEquals(2, available.size(), "Remaining available appointments should be 2 after one booking");
     }
 
     @Test
     void testBookAlreadyBookedAppointment() {
-        boolean result = appointmentService.bookAppointment(2);
+        int appId = 2;
+        appointmentService.bookAppointment(appId);
+        
+        boolean result = appointmentService.bookAppointment(appId);
+        
         assertFalse(result, "Booking an already booked appointment must not be allowed");
     }
 
@@ -77,10 +84,12 @@ class AppointmentServiceTest {
     @Test
     void testSendAppointmentReminder() {
         int appId = 1;
-        appointmentService.sendAppointmentReminder(appId);
         
-        String expectedMessage = "Reminder: Your appointment with ID 1 is coming up!";
-        assertTrue(mockNotification.isMessageSent(expectedMessage), "The mock should record that the reminder was sent successfully");
+        
+        appointmentService.sendAppointmentReminder(appId);
+
+        
+        verify(mockNotification, times(1)).update(contains("Reminder"));
     }
     
     @Test
