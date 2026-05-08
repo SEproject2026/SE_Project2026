@@ -14,7 +14,9 @@ public class MainMenu {
     private AppointmentService appointmentService;
     private Scanner scanner;
     private User currentUser;
-
+    private static final String ADMIN_UID = "admin";
+    private static final String ADMIN_PSW = "123"; 
+    
     public MainMenu() {
         this.appointmentService = new AppointmentService();
         this.scanner = new Scanner(System.in);
@@ -27,6 +29,7 @@ public class MainMenu {
         }
     }
 
+    
     public void start() {
         boolean keepRunningSystem = true;
 
@@ -35,8 +38,8 @@ public class MainMenu {
             System.out.println("--- Login System (Type 'shutdown' to close program) ---");
             System.out.flush();
 
-            String username = "admin";
-            String password = "123";
+            String username = ADMIN_UID;
+            String password = ADMIN_PSW;
 
             try {
                 System.out.print("Enter Username: ");
@@ -56,10 +59,10 @@ public class MainMenu {
                     password = scanner.nextLine().trim();
                 }
             } catch (Exception e) {
-                username = "admin";
+                username = ADMIN_UID;
             }
 
-            boolean isAdmin = username.equalsIgnoreCase("admin");
+            boolean isAdmin = username.equalsIgnoreCase(ADMIN_UID);
             this.currentUser = new User(username, password, isAdmin);
             System.out.println("\nLogin successful! Welcome, " + username);
 
