@@ -26,6 +26,7 @@ public class MainMenu {
         try {
             this.appointmentService.addObserver(new EmailService());
         } catch (Exception e) {
+        	
             System.out.println("Warning: Email service could not start.");
         }
     }
@@ -52,19 +53,19 @@ public class MainMenu {
                         break; 
                     }
                     if (!line.isEmpty()) loginUser = line;
-                    }
+                }
 
                 System.out.print("Enter Password: ");
                 System.out.flush();
                 if (scanner.hasNextLine()) {
-                    loginSecret = scanner.nextLine().trim(); 
-                    }
+                    loginSecret = scanner.nextLine().trim();
+                }
             } catch (Exception e) {
-                loginUser = ADMIN_UID; 
+                loginUser = ADMIN_UID;
             }
 
-            boolean isAdmin = loginUser.equalsIgnoreCase(ADMIN_UID); 
-            this.currentUser = new User(loginUser, loginSecret, isAdmin); 
+            boolean isAdmin = loginUser.equalsIgnoreCase(ADMIN_UID);
+            this.currentUser = new User(loginUser, loginSecret, isAdmin);
             System.out.println("\nLogin successful! Welcome, " + loginUser);
 
             int choice = -1;
@@ -80,21 +81,25 @@ public class MainMenu {
 
                 String input = scanner.nextLine().trim();
                 if (input.isEmpty()) continue;
-
-                try {
-                    choice = Integer.parseInt(input);
-                    if (choice == 0) {
-                        System.out.println("Logging out " + loginUser + "..."); 
-                        } else {
-                        handleChoice(choice);
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input. Please enter a number.");
-                    choice = -1;
-                }
+                processChoice(input, loginUser); 
+                if (input.equals("0")) choice = 0; 
             }
         }
         System.out.println("System Shutdown. Goodbye!");
+    }
+
+ 
+    private void processChoice(String input, String username) {
+        try {
+            int selected = Integer.parseInt(input);
+            if (selected == 0) {
+                System.out.println("Logging out " + username + "...");
+            } else {
+                handleChoice(selected);
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a number.");
+        }
     }
 
     private void displayMenu() {
