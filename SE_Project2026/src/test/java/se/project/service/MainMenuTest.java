@@ -61,4 +61,22 @@ public class MainMenuTest {
         MainMenu menu = new MainMenu();
         assertDoesNotThrow(() -> menu.start());
     }
+    
+    @Test
+    void testEmptyInputsAndNavigation() {
+        String input = "\n\n\n4\n\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
+    
+    @Test
+    void testAdminAddAppointmentError() {
+        String input = "\n\n2\ninvalid\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
 }
