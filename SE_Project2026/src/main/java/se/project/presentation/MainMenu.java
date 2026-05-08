@@ -33,61 +33,14 @@ public class MainMenu {
 
     
     public void start() {
-        boolean keepRunningSystem = true;
-
-        while (keepRunningSystem) { 
-            System.out.println("\n=== SYSTEM GATEWAY ===");
-            System.out.println("--- Login System (Type 'shutdown' to close program) ---");
-            System.out.flush();
-
-            String loginUser = ADMIN_UID;
-            String loginSecret = ADMIN_KEY;
-
-            try {
-                System.out.print("Enter Username: ");
-                System.out.flush();
-                if (scanner.hasNextLine()) {
-                    String line = scanner.nextLine().trim();
-                    if (line.equalsIgnoreCase("shutdown")) {
-                        keepRunningSystem = false;
-                        break; 
-                    }
-                    if (!line.isEmpty()) loginUser = line;
-                }
-
-                System.out.print("Enter Password: ");
-                System.out.flush();
-                if (scanner.hasNextLine()) {
-                    loginSecret = scanner.nextLine().trim();
-                }
-            } catch (Exception e) {
-                loginUser = ADMIN_UID;
-            }
-
-            boolean isAdmin = loginUser.equalsIgnoreCase(ADMIN_UID);
-            this.currentUser = new User(loginUser, loginSecret, isAdmin);
-            System.out.println("\nLogin successful! Welcome, " + loginUser);
-
-            int choice = -1;
-            while (choice != 0) {
-                displayMenu();
-                System.out.print("Enter choice: ");
-                System.out.flush();
-
-                if (!scanner.hasNextLine()) {
-                    keepRunningSystem = false; 
-                    break;
-                }
-
-                String input = scanner.nextLine().trim();
-                if (input.isEmpty()) continue;
-                processChoice(input, loginUser); 
-                if (input.equals("0")) choice = 0; 
-            }
+        while (true) {
+            String loginUser = performLogin();
+            
+            if (loginUser == null) break;
+            runMenuLoop(loginUser);
         }
         System.out.println("System Shutdown. Goodbye!");
     }
-
  
     private void processChoice(String input, String username) {
         try {
@@ -101,7 +54,41 @@ public class MainMenu {
             System.out.println("Invalid input. Please enter a number.");
         }
     }
-
+    
+    private void runMenuLoop(String user) {
+        int choice = -1;
+        while (choice != 0) {
+            displayMenu();
+            System.out.print("Enter choice: ");
+            if (!scanner.hasNextLine()) break;
+            
+            String input = scanner.nextLine().trim();
+            if (input.isEmpty()) continue;
+            
+            processChoice(input, user);
+            if (input.equals("0")) choice = 0;
+        }
+    }
+    private String performLogin() {
+        String user = ADMIN_UID;
+        String pass = ADMIN_KEY;
+        try {
+            System.out.print("Enter Username: ");
+            if (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.equalsIgnoreCase("shutdown")) return null;
+                if (!line.isEmpty()) user = line;
+            }
+            System.out.print("Enter Password: ");
+            if (scanner.hasNextLine()) pass = scanner.nextLine().trim();
+        } catch (Exception e) {
+            user = ADMIN_UID;
+        }
+        this.currentUser = new User(user, pass, user.equalsIgnoreCase(ADMIN_UID));
+        System.out.println("\nLogin successful! Welcome, " + user);
+        return user;
+    }
+    
     private void displayMenu() {
         System.out.println("\n--- Main Menu ---");
         if (currentUser.isAdmin()) {
