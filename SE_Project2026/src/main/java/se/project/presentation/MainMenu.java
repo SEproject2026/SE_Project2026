@@ -15,7 +15,7 @@ public class MainMenu {
     private Scanner scanner;
     private User currentUser;
     private static final String ADMIN_UID = "admin";
-    private static final String ADMIN_PSW = "123"; 
+    private static final String ADMIN_KEY = "123";
     
     public MainMenu() {
         this.appointmentService = new AppointmentService();
@@ -39,8 +39,8 @@ public class MainMenu {
             System.out.println("--- Login System (Type 'shutdown' to close program) ---");
             System.out.flush();
 
-            String username = ADMIN_UID;
-            String password = ADMIN_PSW;
+            String loginUser = ADMIN_UID;
+            String loginSecret = ADMIN_KEY;
 
             try {
                 System.out.print("Enter Username: ");
@@ -51,21 +51,21 @@ public class MainMenu {
                         keepRunningSystem = false;
                         break; 
                     }
-                    if (!line.isEmpty()) username = line;
-                }
+                    if (!line.isEmpty()) loginUser = line;
+                    }
 
                 System.out.print("Enter Password: ");
                 System.out.flush();
                 if (scanner.hasNextLine()) {
-                    password = scanner.nextLine().trim();
-                }
+                    loginSecret = scanner.nextLine().trim(); 
+                    }
             } catch (Exception e) {
-                username = ADMIN_UID;
+                loginUser = ADMIN_UID; 
             }
 
-            boolean isAdmin = username.equalsIgnoreCase(ADMIN_UID);
-            this.currentUser = new User(username, password, isAdmin);
-            System.out.println("\nLogin successful! Welcome, " + username);
+            boolean isAdmin = loginUser.equalsIgnoreCase(ADMIN_UID); 
+            this.currentUser = new User(loginUser, loginSecret, isAdmin); 
+            System.out.println("\nLogin successful! Welcome, " + loginUser);
 
             int choice = -1;
             while (choice != 0) {
@@ -84,8 +84,8 @@ public class MainMenu {
                 try {
                     choice = Integer.parseInt(input);
                     if (choice == 0) {
-                        System.out.println("Logging out " + username + "...");
-                    } else {
+                        System.out.println("Logging out " + loginUser + "..."); 
+                        } else {
                         handleChoice(choice);
                     }
                 } catch (NumberFormatException e) {
