@@ -16,6 +16,7 @@ public class MainMenu {
     private User currentUser;
     private static final String ADMIN_UID = "admin";
     private static final String ADMIN_KEY = "123";
+    private static final String MSG_INVALID_ID = "Invalid ID.";
     
     public MainMenu() {
         this.appointmentService = new AppointmentService();
@@ -31,7 +32,6 @@ public class MainMenu {
         }
     }
 
-    
     public void start() {
         while (true) {
             String loginUser = performLogin();
@@ -42,6 +42,7 @@ public class MainMenu {
         System.out.println("System Shutdown. Goodbye!");
     }
  
+    
     private void processChoice(String input, String username) {
         try {
             int selected = Integer.parseInt(input);
@@ -163,7 +164,7 @@ public class MainMenu {
                 System.out.println("Failed to cancel.");
             }
         } catch (Exception e) {
-            System.out.println("Invalid ID.");
+        	System.out.println(MSG_INVALID_ID);
         }
     }
 
@@ -186,7 +187,7 @@ public class MainMenu {
                 System.out.println("Booking failed (Already booked or ID not found).");
             }
         } catch (Exception e) {
-            System.out.println("Invalid ID.");
+        	System.out.println(MSG_INVALID_ID);
         }
     }
 
@@ -200,7 +201,7 @@ public class MainMenu {
                 System.out.println("Failed to cancel.");
             }
         } catch (Exception e) {
-            System.out.println("Invalid ID.");
+        	System.out.println(MSG_INVALID_ID);
         }
     }
 
