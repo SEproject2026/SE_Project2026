@@ -212,6 +212,7 @@ class AppointmentServiceTest {
         se.project.domain.User admin = new se.project.domain.User("admin", "123", true);
         menu.setTestUser(admin);
 
+        
    
         assertNotNull(menu);
 
