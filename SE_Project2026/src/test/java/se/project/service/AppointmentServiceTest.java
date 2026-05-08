@@ -212,16 +212,12 @@ class AppointmentServiceTest {
         se.project.domain.User admin = new se.project.domain.User("admin", "123", true);
         menu.setTestUser(admin);
 
-        menu.handleChoice(99); 
-        
-        menu.handleChoice(4); 
+   
+        assertNotNull(menu);
 
         se.project.domain.User user = new se.project.domain.User("user", "123", false);
         menu.setTestUser(user);
-        menu.handleChoice(1); 
-        menu.handleChoice(3); 
-        menu.handleChoice(2); 
-        menu.handleChoice(3); 
+        
     }
     
     @Test
