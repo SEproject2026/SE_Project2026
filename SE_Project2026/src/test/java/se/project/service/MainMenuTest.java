@@ -47,4 +47,24 @@ public class MainMenuTest {
         MainMenu menu = new MainMenu();
         assertDoesNotThrow(() -> menu.start());
     }
+    
+    @Test
+    void testFullAdminFlow() {
+   
+        String input = "\n\n2\n500\nGeneral\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
+
+    @Test
+    void testUserBookingFlow() {
+      
+        String input = "Maha\n123\n2\n1\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
 }
