@@ -40,4 +40,25 @@ public class MainMenuTest {
     private void provideInput(String data) {
         System.setIn(new ByteArrayInputStream(data.getBytes()));
     }
+    
+    
+    @Test
+    void testAdvancedMenuOptions() {
+       
+        String input = "\n\n3\n1\n4\nGeneral\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
+
+    @Test
+    void testUserCancellationFlow() {
+        
+        String input = "Maha\n123\n3\n1\n0\nshutdown\n";
+        System.setIn(new ByteArrayInputStream(input.getBytes()));
+
+        MainMenu menu = new MainMenu();
+        assertDoesNotThrow(() -> menu.start());
+    }
 }
