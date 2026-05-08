@@ -21,6 +21,7 @@ public class MainMenu {
         this.appointmentService = new AppointmentService();
         this.scanner = new Scanner(System.in);
         
+        
         this.appointmentService.addObserver(new MockNotificationService());
         try {
             this.appointmentService.addObserver(new EmailService());
