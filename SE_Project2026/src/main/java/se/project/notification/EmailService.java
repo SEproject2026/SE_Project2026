@@ -1,5 +1,7 @@
 package se.project.notification;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import io.github.cdimascio.dotenv.Dotenv; 
@@ -8,7 +10,9 @@ import java.util.Properties;
 public class EmailService implements NotificationService {
     private final String username;
     private final String password;
-
+    
+    private static final Logger logger = Logger.getLogger(EmailService.class.getName()); 
+    
     public EmailService() {
         Dotenv dotenv = Dotenv.load();
         this.username = dotenv.get("EMAIL_USERNAME");
@@ -17,23 +21,23 @@ public class EmailService implements NotificationService {
 
     @Override
     public void update(String message) {
-        System.out.println("Notification received: " + message);
+        logger.log(Level.INFO, "Notification received: {0}", message);
         
         try {
             sendEmail("s12218306@stu.najah.edu", "Appointment Notification", message);
         } catch (Exception e) {
-            System.out.println("Email skipped in test environment.");
+            logger.log(Level.WARNING, "Email skipped in test environment.");
         }
     }
     
     public void sendEmail(String to, String subject, String body) {
         if (username == null || password == null || to == null) {
-            System.out.println("Error: Credentials missing in .env file!");
+            logger.log(Level.SEVERE, "Error: Credentials missing in .env file!");
             return;
         }
 
         if (to.toLowerCase().contains("test")) {
-            System.out.println("[Test Mode] Skipping real email transport for: " + to);
+            logger.log(Level.INFO, "[Test Mode] Skipping real email transport for: {0}", to);
             return; 
         }
 
@@ -59,15 +63,15 @@ public class EmailService implements NotificationService {
             mimeMessage.setText(body);
 
             Transport.send(mimeMessage);
-            System.out.println(">>> Real email sent successfully to: " + to);
+            logger.log(Level.INFO, ">>> Real email sent successfully to: {0}", to);
             
         } catch (MessagingException e) {
-            System.out.println("Failed to send email: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to send email: {0}", e.getMessage());
         }
     }
+
     @Override
     public boolean isMessageSent(String message) {
         return true;
     }
-    
 }
