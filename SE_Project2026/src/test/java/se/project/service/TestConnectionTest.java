@@ -5,7 +5,10 @@ import se.project.presentation.TestConnection;
 
 
 public class TestConnectionTest {
-	void testConnectionExecution() {
-	    assertDoesNotThrow(() -> TestConnection.main(new String[]{}));
-	}
+	@Test
+    void testConnectionExecution() {
+        assertDoesNotThrow(() -> {
+            TestConnection.main(new String[]{});
+        }, "The connection main method should execute without throwing exceptions");
+    }
 }
