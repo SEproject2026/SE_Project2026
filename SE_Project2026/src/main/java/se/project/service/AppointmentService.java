@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
  * @version 3.5
  */
 public class AppointmentService {
-
+	
+	private static final String DEFAULT_RULE = "default";
     /** List of all appointments managed by the system. */
     private List<Appointment> appointments;
 
@@ -41,8 +42,7 @@ public class AppointmentService {
         this.rules = new HashMap<>();
 
         rules.put("urgent", new UrgentRuleStrategy());
-        rules.put("default", new DefaultRuleStrategy());
-
+        rules.put(DEFAULT_RULE, new DefaultRuleStrategy());
         // Initial Data
         appointments.add(new Appointment(1,
                 LocalDateTime.of(2026, 5, 1, 10, 0),
@@ -111,8 +111,8 @@ public class AppointmentService {
      * @return true if the duration complies with the specific type's rules; false otherwise.
      */
     public boolean isValidDurationPerType(Appointment app) {
-        String type = (app.getType() != null) ? app.getType().toLowerCase() : "default";
-        BookingRuleStrategy strategy = rules.getOrDefault(type, rules.get("default"));
+        String type = (app.getType() != null) ? app.getType().toLowerCase() : DEFAULT_RULE;
+        BookingRuleStrategy strategy = rules.getOrDefault(type,rules.get(DEFAULT_RULE));
         return strategy.isValid(app);
     }
 
